@@ -1,0 +1,46 @@
+program EMILY
+
+record REC{
+	int arr[];
+}
+
+REC r1;
+
+int x;
+{
+	int sum(int z, int d)
+	{
+		return z + d;
+	}
+
+	bool verify() {
+		print('v');
+		return false;
+	}	
+
+	int fn2(){
+		return 2;
+	}
+	
+	int fn1(){
+		return 1;
+	}
+
+	void main()
+		int lok;
+	{ 
+		r1 = new REC;
+		r1.arr = new int[3];
+		
+		if (verify() || fn2() == 3 || sum(2,3) == 5)
+			print(chr(97));
+		else
+			print(195);
+			
+		lok = 12345;
+		read(r1.arr[0]);
+		print(eol);
+		print(r1.arr[0]);
+	}
+
+}

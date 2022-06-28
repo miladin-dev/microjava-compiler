@@ -1,0 +1,35 @@
+program syntax_test2
+int gi1;
+int gi2, gi3[], gi4;
+bool gb1, gb2;
+char gc1;
+
+
+
+{
+
+	//Parameter error
+	void fn1(int x, greska)
+	{
+		
+	}
+	
+	//Method parametar error
+	void fn2(greska1, int , char c)
+	{
+	
+	}
+	
+	void main()
+	{
+		gi1 = 5;
+		
+		if(cond_greska &| cond_greska)
+		{
+		
+		}
+		
+		
+	}
+
+}

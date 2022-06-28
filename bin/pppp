@@ -1,0 +1,59 @@
+class EmaLjubav extends NajviseNaCelomSvetu
+{ 
+    int y;
+    int a,b;
+}
+
+class Klasa extends Klasa2{
+    int x, y[];
+    int p;
+    { 
+        int meth(int a, int b[]) { 
+            {
+                goto Label3;
+                goto Label3;
+            }
+
+            goto Label;
+            return new int; 
+            return a();
+            return aa(x,b);
+            return this.x.b[c];
+            return this.x[c].b.c;
+            return new int[c];
+            return a;
+            return true; 
+            return 'e';
+            break;
+            {
+                {
+                    goto Label3;
+                    goto Label3;
+                }
+                {
+                    goto Label3;
+                    goto Label3;
+                    goto Label3;
+                    goto Label3;
+                }
+            }
+
+            goto Label2;
+
+            {
+                goto Label3;
+                goto Label3;
+            }
+
+        } 
+        void meth2() {
+        	if(e) {
+        		x = a;
+        		b.c[5]++;
+    		}
+    		else {
+    			x = b;
+			}
+        }
+        //double meth3(){}
+    }

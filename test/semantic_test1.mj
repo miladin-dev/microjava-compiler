@@ -1,0 +1,58 @@
+program syntax_test4
+
+int var1;
+char ch1;
+
+record Cord
+{
+	int arr[], x;
+}
+
+Cord c1;
+
+{
+
+	bool check(int x)
+	{
+		if (x > 0)
+		{
+			print('t');
+			print('r');
+			print('u');
+			print('e');
+			return true;
+		}	
+		else
+		{
+			return false;
+		}
+		
+	}
+
+	void main()
+	{
+		var1 = 5;
+		
+		print(var1);
+		
+		if (check(var1))
+			var1 = 21;
+		else
+			var1 = 22;	
+		
+		print(var1);
+		
+		c1 = new Cord;
+		
+		c1.arr = new int[5];
+		c1.arr[0] = 1204;
+		c1.arr[2] = 2;
+		
+		print(c1.arr[0]);
+		print(c1.arr[2]);
+		print(c1.arr[c1.arr[0] - 1204]);
+		print(c1.arr[c1.arr[2]]);
+		
+	
+	}
+}

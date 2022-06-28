@@ -1,0 +1,73 @@
+program mojProgram
+const int size = 10;
+
+
+class Table {
+
+	int x;
+	int a, b[], c;
+	bool a,c;
+	
+	{
+		 void putp (int a, int idx) int x; int y; 
+		 { 
+		 	{
+		 		this.pos[idx] = a; 
+		 		this.pos[idx] = a; 
+				
+	 			{
+	 				this.pos[idx] = b;
+	 				this.pos[idx] = b;
+	 			}
+	 		
+	 		}
+		 }
+		 void putn (int a, int idx) { this.neg[idx] = a; }
+		 int getp (int idx) { return pos[idx]; }
+		 int getn (int idx) { return neg[idx]; }
+	}
+}
+
+
+
+
+record Bar {
+	int x, z;
+}
+
+
+
+class Table {
+
+	int x;
+	int a, b[], c;
+	bool a,c;
+	
+	{
+		 void putp (int a, int idx) int x; int y; 
+		 { 
+		 		
+				do {
+					x = ;
+					x = c;				
+					break;
+					continue;
+					return b;
+					return;
+					print(b);
+					print(b, 5);
+					goto B;
+					this.b[d].x.d[c] = a;
+					
+					if(a)
+						return b;
+				}
+				while (size > x || -size < x && x < 0);
+				
+		 }
+		 void putn (int a, int idx) { this.neg[idx] = a; }
+		 int getp (int idx) { return pos[idx]; }
+		 int getn (int idx) { return neg[idx]; }
+	}
+}
+

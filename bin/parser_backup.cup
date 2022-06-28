@@ -1,0 +1,421 @@
+package rs.ac.bg.etf.pp1;
+
+import java_cup.runtime.*;
+import org.apache.log4j.*;
+
+// import java.io.*;
+import rs.ac.bg.etf.pp1.ast.*;
+
+parser code {:
+	
+	boolean errorDetected = false;
+	
+	Logger log = Logger.getLogger(getClass());
+   
+    public void report_fatal_error(String message, Object info) throws java.lang.Exception {
+      done_parsing();
+      report_error(message, info);
+    }
+  
+    public void syntax_error(Symbol cur_token) {
+        report_error("\nSintaksna greska", cur_token);
+    }
+  
+    public void unrecovered_syntax_error(Symbol cur_token) throws java.lang.Exception {
+        report_fatal_error("Fatalna greska, parsiranje se ne moze nastaviti", cur_token);
+    }
+
+    public void report_error(String message, Object info) {
+    	errorDetected = true;
+    	StringBuilder msg = new StringBuilder(message); 
+    	if (info instanceof Symbol) {			
+			Symbol errorSymbol = (Symbol) info;
+            msg.append(" na liniji ").append(errorSymbol.left);
+			msg.append(", koloni ").append(errorSymbol.right);
+			if (errorSymbol.value != null) {
+				msg.append(" za simbol \"").append(errorSymbol.value.toString()).append("\"");
+			}			
+			msg.append("!");
+		}
+        log.error(msg.toString());
+    }
+    
+    public void report_info(String message, Object info) {
+    	errorDetected = true;
+    	StringBuilder msg = new StringBuilder(message); 
+    	if (info instanceof Symbol) {			
+			Symbol errorSymbol = (Symbol) info;
+            msg.append(" na liniji ").append(errorSymbol.left);
+			msg.append(", koloni ").append(errorSymbol.right);
+			if (errorSymbol.value != null) {
+				msg.append(" za simbol \"").append(errorSymbol.value.toString()).append("\"");
+			}			
+			msg.append("!");
+		}
+        log.error(msg.toString());
+    }
+    
+:}
+
+scan with {:
+	Symbol s = this.getScanner().next_token();
+	if (s != null && s.value != null) 
+		log.info(s.toString() + " " + s.value.toString());
+	return s;
+:}
+
+/* Operators */
+terminal EQ, PLUSPLUS, MINUSMINUS, OROR, ANDAND, EQEQ, DIFF, GR, GRE, LS, LSE, MINUS, PLUS, MUL, DIV, MOD;
+terminal LSQRB, RSQRB, LBRACK, RBRACK, LCURLY, RCURLY;
+nonterminal OptionalArrayOp;
+
+/* Global names */
+terminal IDENT, SEMI, CONST, NUMCONST, CHARCONST, BOOLCONST, COMMA, VOID, COLON, DOT, RECORD;
+nonterminal Type, LiteralConst;
+
+/* Program */
+terminal PROG;
+
+/* Variables Declaration */
+nonterminal VarIdentDeclList, RecordDecl;
+nonterminal ConstDecl, ProgramDecl, VarDecl, VarIdentDecl, ClassDecl;
+
+/* Const Declaration */
+nonterminal ConstAssignList;
+nonterminal ConstAssign;
+
+/* Method Declaration */
+nonterminal Extends, ClassBody, FormPars, ReturnType, FormParamList, FormParameter, VarDeclList, MethodDecl;
+nonterminal Statement, MethodDeclList, Statements, Label;
+
+
+/* Statement */
+nonterminal SingleStatement, MultipleStatements, MatchedIfStatement;
+nonterminal Designator, DesignatorStatement;
+nonterminal Condition, ConditionIf, CondTerm, CondFact;
+nonterminal Expr, ActPars, ExprList, Term, Factor;
+nonterminal Addop, RelOp, MulOp, OptMinus;
+
+/* KEYWORDS */
+terminal KEYWORD_IF, KEYWORD_ELSE, KEYWORD_DO, KEYWORD_WHILE, KEYWORD_BREAK, KEYWORD_CONTINUE;
+terminal KEYWORD_RETURN, KEYWORD_READ, KEYWORD_PRINT, KEYWORD_GOTO, KEYWORD_NEW, KEYWORD_CLASS, KEYWORD_EXTENDS;
+
+nonterminal rs.etf.pp1.symboltable.concepts.Obj Program, ProgName;
+
+
+precedence left KEYWORD_ELSE;
+
+
+
+Program ::= (Program) PROG ProgName:p ProgramDecl LCURLY MethodDeclList RCURLY;
+
+ProgName ::= (ProgName) IDENT:progName;
+
+Type ::= (Type) IDENT
+		; 
+
+
+ProgramDecl ::= (ConstProgramDecl) ProgramDecl ConstDecl
+				| 
+				(VarProgramDecl) ProgramDecl VarDecl
+				|
+				(ClassProgramDecl) ProgramDecl ClassDecl
+				|
+				(RecordProgramDecl) ProgramDecl RecordDecl
+				|
+				(Tralal) 
+				;
+				
+				
+/* ConstProgramDeclaration */
+
+
+ConstDecl ::=  (ConstDeclarations) CONST Type ConstAssignList SEMI
+			  |
+			   (ConstDeclrsError) CONST error SEMI:err {: parser.report_error("Syntax error recovery Class Declaration on line " + errleft, null); :}
+				;
+
+ConstAssignList ::= (ConstAssignments) ConstAssignList COMMA ConstAssign
+					|
+					(ConstAssignment) ConstAssign
+					;
+
+ConstAssign ::= (ConstAssg) IDENT EQ LiteralConst
+				;
+
+LiteralConst ::= (NumberConst) NUMCONST
+				|
+				(CharConst) CHARCONST
+				|
+				(BoolConst) BOOLCONST
+				;
+
+
+/*	VarProgramDeclaration  */	
+			
+			
+VarDecl ::= (VarDecl) Type:varType VarIdentDeclList SEMI
+			;
+
+
+VarIdentDeclList ::= (VarIdentDeclarations) VarIdentDeclList COMMA VarIdentDecl
+					|
+					 (VarIdDecl) VarIdentDecl
+					;
+			
+VarIdentDecl ::= (VarIdentDecl) IDENT:varName OptionalArrayOp 
+				;
+			
+OptionalArrayOp ::= (ArrOp) LSQRB RSQRB
+					|
+					(NoArrayOp)
+					;
+					
+/* Record Declaration */
+
+RecordDecl ::= (RecordDecl) RECORD IDENT LCURLY VarDeclList RCURLY;
+			   
+
+/*	Class Declaration  */	
+			
+				
+ClassDecl ::= (ClassDecl) KEYWORD_CLASS IDENT Extends LCURLY VarDeclList ClassBody RCURLY 
+				;
+
+Extends ::= (Extnd) KEYWORD_EXTENDS Type
+			|
+			(NoExtends)
+			;
+			
+ClassBody ::= (ClassBdy) LCURLY MethodDeclList RCURLY
+				|
+			  (NoClassBody) /* epsilon */
+				;
+	
+
+/* Method Declaration  */	
+
+
+MethodDeclList ::= (MultipleMethods) MethodDeclList MethodDecl
+					|
+				   (SingleMethod) /* epsilon */
+					;
+				
+MethodDecl ::=  (MethodDecl1) ReturnType IDENT LBRACK FormPars RBRACK VarDeclList LCURLY MultipleStatements RCURLY
+			   ;
+
+
+ReturnType ::= (RetType) Type
+		  	   |
+			   (RetVoid) VOID
+			   ;	
+			   
+FormPars ::= (FormParams) FormParamList
+			|
+			(NoFormPars) /* epsilon */
+			;
+
+FormParamList ::= (FormParameters) FormParamList COMMA FormParameter
+				| 
+				(FormParam) FormParameter
+				;
+				
+FormParameter ::= (SingleFormParam) Type IDENT OptionalArrayOp 
+				|
+				  (SingleFormParamError) error:err {: parser.report_error("Syntax error recovery for Method Parameters on line " + errleft, null); :}
+				;
+			
+
+VarDeclList ::= (MultipleVarDeclarations) VarDeclList VarDecl
+				|
+				(SingleVarDeclaration)
+				;
+				
+
+/* Statements */
+				
+				
+MultipleStatements ::= (MultipleStmts) MultipleStatements Statement 
+					   |
+					   (NoSmtt) 
+					   ;
+					   
+   
+				
+Statement ::= (OneStmtLbl) Label COLON SingleStatement
+			  |
+			  (OneStmt) SingleStatement
+			  |
+			  (StmtsBracket) Statements
+			  ;
+
+Statements ::= (Statements) LCURLY MultipleStatements RCURLY;
+
+Label ::= (Label) IDENT;
+
+SingleStatement ::= (StmtDesignator) DesignatorStatement SEMI
+					|
+					(StmIfNoBrace) KEYWORD_IF LBRACK ConditionIf RBRACK Statement
+					|
+					(MatchedIfStmt) MatchedIfStatement
+					|
+					(StmtDoWhile) KEYWORD_DO MultipleStatements KEYWORD_WHILE LBRACK Condition RBRACK SEMI
+					|
+					(StmtBreak) KEYWORD_BREAK SEMI
+					|
+					(StmtContinue) KEYWORD_CONTINUE SEMI
+					|
+					(StmtReturn) KEYWORD_RETURN SEMI
+					|
+					(StmtRetExpr) KEYWORD_RETURN Expr SEMI
+					|
+					(StmtRead) KEYWORD_READ LBRACK Designator RBRACK SEMI
+					|
+					(StmtPrint) KEYWORD_PRINT LBRACK Expr RBRACK SEMI
+					|
+					(StmtPrintConst) KEYWORD_PRINT LBRACK Expr COMMA NUMCONST RBRACK SEMI
+					|
+					(StmtGoto) KEYWORD_GOTO IDENT SEMI	
+					;
+			
+			
+MatchedIfStatement ::= (MtchIfStmtBrackets) KEYWORD_IF LBRACK ConditionIf RBRACK Statement KEYWORD_ELSE Statement
+					   ;
+   
+ConditionIf ::= (CondIf) Condition 
+				| 
+				(CondIfErr) error:err {: parser.report_info("Syntax error for 'IF CONDITION' on line " + errleft, null); :}
+				;
+/* Designator */
+				
+				
+DesignatorStatement ::= (DesStmtEq) Designator EQ Expr
+						|
+						(DesStmtEqErr) error:err {: parser.report_info("Syntax error for '=' on line " + errleft, null); :}
+						|
+						(DesStmtFnAct) Designator LBRACK ActPars RBRACK 
+						|
+						(DesStmtFn) Designator LBRACK RBRACK
+						|
+						(DesStmtPLL) Designator PLUSPLUS
+						|
+						(DesStmtMINN) Designator MINUSMINUS
+						;
+// this.x[3];
+// this.x.b[5];
+
+			  
+Designator ::= (DesignDot) Designator DOT IDENT
+			  |
+			   (DesignDotArray) Designator DOT IDENT LSQRB Expr RSQRB
+			  |
+			   (DesignArrayIndex) IDENT LSQRB Expr RSQRB
+			  |
+			   (DelegDesign) IDENT
+			  ;
+
+				
+/* Expr, Factor, Term, ActPars */
+				
+				
+Expr ::= (SingleExpr) OptMinus Term
+		|
+		(MultipleExpr) OptMinus Term Addop Term
+		;
+
+ActPars ::= (ActPars) ExprList
+			;
+			
+ExprList ::= (MultipleExpressions) ExprList COMMA Expr
+			|
+			 (SingleExpression) Expr
+			;
+		
+				
+Term ::= (SingleTerm) Factor 
+		|
+		(MultipleTerm) Factor MulOp Factor
+		;
+		
+		
+Factor ::= 	(FactorDes) Designator
+			|
+			(FactorFn) Designator LBRACK RBRACK
+			|
+			(FactorFnAct) Designator LBRACK ActPars RBRACK
+			|
+			(FactorNum) NUMCONST
+			|
+			(FactorChar) CHARCONST
+			|
+			(FactorBool) BOOLCONST
+			|
+			(FactorNew) KEYWORD_NEW Type
+			|
+			(FactorNewExpr) KEYWORD_NEW Type LSQRB Expr RSQRB
+			|
+			(FactorExpr) LBRACK Expr RBRACK
+			;
+
+
+/* Conditions */
+
+
+Condition ::= (SingleCond) CondTerm 
+			  |
+			  (MultipleCond) CondTerm OROR CondTerm
+			;
+				
+				
+CondTerm ::= (SingleCondTerm) CondFact 
+			|
+			(MultipleCondTerm) CondFact ANDAND CondFact
+			;
+				
+
+CondFact ::= (CondExpr) Expr
+			|
+			 (CondRelOp) Expr RelOp Expr
+			;
+
+
+/* Operations */
+
+
+RelOp ::= (Equalss) EQEQ
+		  |
+		  (Different) DIFF
+		  |
+		  (Greater) GR
+		  |
+		  (GreaterEq) GRE
+		  |
+		  (Lesser) LS
+		  |
+		  (LesserEq) LSE
+		  ;
+		  
+
+MulOp ::= (MulAsteriks) MUL
+		  |
+		  (MulDiv) DIV
+		  |
+		  (MulMod) MOD
+		  ;
+		 
+ Addop ::= (AddopPlus) PLUS
+ 		   |
+ 		   (AddopMinus) MINUS
+ 		   ;
+ 		   
+OptMinus ::= MINUS
+			|
+			(NoMinusSign)
+			; 
+				
+
+
+
+
+
+

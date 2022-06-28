@@ -1,0 +1,26 @@
+program syntax_test1
+int gi1;
+int gi2, gi3[], gi4;
+bool gb1, gb2;
+char gc1;
+
+//Error
+const int ci1 = ;
+const char c = 'a', b = *;
+
+{
+	
+	void main()
+	{
+		gi1 = 5;
+		
+		//Error
+		gi2 = ; 
+		
+		//Error
+		gc1 = *;
+		
+		
+	}
+
+}

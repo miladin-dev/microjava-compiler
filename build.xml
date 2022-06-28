@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name = "MJCompiler" default="compile" basedir=".">
+	
+	<!-- Lexer -->
+	<target name="lexer.gen" depends="delete.lexer">
+		<java jar="lib/JFlex.jar" fork="true">
+			<arg value="-d"/>
+			<arg value="./src/rs/ac/bg/etf/pp1"/>
+			<arg value="spec/mjlexer.flex"/>
+		</java>
+	</target>
+	
+	<target name="delete.lexer">
+		<delete>
+			<fileset dir="src/rs/ac/bg/etf/pp1">
+				<exclude name="sym.java"/>
+				<exclude name="sym_old.java"/>
+				<exclude name="MJParser.java"/>
+				<exclude name="SemanticAnalyzer.java"/>
+				<exclude name="TabSym.java"/>
+				<exclude name="/util/"/>
+				<exclude name="/ast/"/>
+				<exclude name="TabSymDump.java"/>
+				<exclude name="CounterVisitor.java"/>
+				<exclude name="CodeGenerator.java"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	
+	<!-- Sintax (Parser) 			<arg value="-dump_states"/> -->
+	<target name="parser.gen.repackage" depends="parser.gen">
+		<replace dir="src" value="rs.ac.bg.etf.pp1.ast" token="src.rs.ac.bg.etf.pp1.ast" summary="true"></replace>
+	</target>
+		
+	<target name="parser.gen" depends="delete.parser">
+		<java jar="lib/cup_v10k.jar" fork="true">
+			
+			<arg value="-destdir"/>
+			<arg value="src/rs/ac/bg/etf/pp1"/>
+			<arg value="-ast"/>
+			<arg value="src.rs.ac.bg.etf.pp1.ast"/>
+			<arg value="-parser"/>
+			<arg value="MJParser"/>
+			<arg value="-buildtree"/>
+			<arg value="spec/mjparser.cup"/>
+		</java>
+	</target>
+	
+	<target name="delete.parser">
+		<delete>
+			<fileset dir="src/rs/ac/bg/etf/pp1">
+				<exclude name="Yylex.java"/>
+				<exclude name="sym_old.java"/>
+				<exclude name="sym.java"/>
+				<exclude name="SemanticAnalyzer.java"/>
+				<exclude name="TabSym.java"/>
+				<exclude name="/util/"/>
+				<exclude name="TabSymDump.java"/>
+				<exclude name="CounterVisitor.java"/>
+				<exclude name="CodeGenerator.java"/>
+			</fileset>
+		</delete>
+	</target>
+	
+	
+	<target name="compile" depends="parser.gen.repackage">
+		<javac srcdir="src/rs/ac/bg/etf/pp1" includeantruntime="false">
+			<classpath>
+				<pathelement path="lib/JFlex.jar"/>
+				<pathelement path="lib/cup_v10k.jar"/>
+				<pathelement path="lib/log4j-1.2.17.jar"/>
+				<pathelement path="lib/symboltable.jar"/>
+				<pathelement path="lib/mj-runtime.jar"/>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="disasm">
+		<java classname="rs.etf.pp1.mj.runtime.disasm">
+			<arg value="test/program1.obj"/>
+			<arg value="-debug"/>
+			<classpath>
+				<pathelement location="lib/mj-runtime.jar"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="runObj" depends="disasm" >
+		<java classname="rs.etf.pp1.mj.runtime.Run">
+			<arg value="test/program1.obj"/>
+
+			<classpath>
+				<pathelement location="lib/mj-runtime.jar"/>
+			</classpath>
+		</java>
+	</target>
+	
+</project>

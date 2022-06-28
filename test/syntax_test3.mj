@@ -1,0 +1,52 @@
+program syntax_test3
+int gi1;
+int gi2, gi3[], gi4;
+bool gb1, gb2;
+char gc1;
+
+
+
+{
+
+
+	void fn1(int x)
+	{
+		
+	}
+
+
+	void main()
+	{
+		gi1 = 5;
+		
+		gi3 = new int[5];
+		gc1 = 'c';
+		
+		//Error
+		gi3 = gc1;
+		
+		//Error
+		fn1(gc1);
+		
+		//Error
+		break;
+		continue;
+		
+		//Error
+		gc1++;
+		
+		gb1 = new Bool;
+		
+		//Error
+		gi3['c'] = 1;
+		gi3[gc1] = 5;
+		
+		gi3[gi1] = 5;
+		
+		//Error
+		gi2 = -gb2;
+		
+		
+	}
+
+}
